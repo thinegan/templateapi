@@ -37,12 +37,21 @@ spec:
       serviceAccountName: {{ include "templateapi.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 40 # Default 30s
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          lifecycle:
+            preStop:
+              exec:
+                command: [
+                  # Gracefully shutdown nginx
+                  # ref: https://learnk8s.io/graceful-shutdown
+                  "/bin/bash", "-c", "sleep 20"
+                ]
           ports:
             - name: http
               containerPort: {{ .Values.service.targetPort }}
