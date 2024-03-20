@@ -86,6 +86,16 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 90
 
+# deploymentStrategy specifies the strategy used to replace old Pods by new ones. Type can be "RollingUpdate" or
+# "Recreate". "RollingUpdate" is the default value.
+# RollingUpdate: The Deployment updates Pods in a rolling update fashion.
+# Recreate: All existing Pods are killed before new ones are created.
+deploymentStrategy:
+  enabled: true
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 50%
+    maxUnavailable: 0
 
 nodeSelector: {}
 

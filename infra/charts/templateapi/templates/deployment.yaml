@@ -5,6 +5,16 @@ metadata:
   labels:
     {{- include "templateapi.labels" . | nindent 4 }}
 spec:
+  revisionHistoryLimit: 3 # Default to 10 if not specified
+  {{- if .Values.deploymentStrategy.enabled }}
+  strategy:
+    type: {{ .Values.deploymentStrategy.type }}
+    {{- if (eq .Values.deploymentStrategy.type "RollingUpdate") }}
+    rollingUpdate:
+      maxSurge: {{ .Values.deploymentStrategy.rollingUpdate.maxSurge }}
+      maxUnavailable: {{ .Values.deploymentStrategy.rollingUpdate.maxUnavailable }}
+    {{- end }}
+  {{- end }}
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
